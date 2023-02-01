@@ -13,3 +13,13 @@ spring:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+security:
+  jwt:
+    access-token:
+      name: access_token
+      presence.name: access_token_presence
+      duration.time.ms: 600000
+    refresh-token:
+      name: refresh_token
+      presence.name: refresh_token_presence
+      duration.time.ms: 604800000

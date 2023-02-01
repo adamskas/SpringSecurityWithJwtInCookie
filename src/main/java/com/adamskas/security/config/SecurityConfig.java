@@ -20,22 +20,28 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-
+        // set CORS and CSRF
         httpSecurity
-                .csrf()
-                .disable()
+                .cors().and().csrf().disable();
+
+        // set permissions on endpoints
+        httpSecurity
                 .authorizeHttpRequests()
                 .requestMatchers("/api/v1/auth/**")
                 .permitAll()
                 .anyRequest()
-                .authenticated()
-                .and()
+                .authenticated();
+
+        // set session management to stateless
+        httpSecurity
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        // add provider and JWT filter
+        httpSecurity
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-                
+
         return httpSecurity.build();
     }
 }
