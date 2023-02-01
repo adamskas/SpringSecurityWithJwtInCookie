@@ -1,4 +1,4 @@
-package com.adamskas.security.refresh_token;
+package com.adamskas.security.exceptions;
 
 public class TokenRefreshException extends RuntimeException {
     public TokenRefreshException() {

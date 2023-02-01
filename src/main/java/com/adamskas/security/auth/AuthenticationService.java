@@ -1,7 +1,8 @@
 package com.adamskas.security.auth;
 
+import com.adamskas.security.exceptions.TokenRefreshException;
+import com.adamskas.security.exceptions.UserWithEmailAlreadyExists;
 import com.adamskas.security.refresh_token.RefreshTokenService;
-import com.adamskas.security.refresh_token.TokenRefreshException;
 import com.adamskas.security.services.JwtService;
 import com.adamskas.security.user.Role;
 import com.adamskas.security.user.UserEntity;
@@ -58,6 +59,10 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
+
+        if(userRepository.findByEmail(request.getEmail().toLowerCase()).isPresent()){
+            throw new UserWithEmailAlreadyExists();
+        }
 
         UserEntity savedUser = userRepository.save(userToBeRegistered);
 

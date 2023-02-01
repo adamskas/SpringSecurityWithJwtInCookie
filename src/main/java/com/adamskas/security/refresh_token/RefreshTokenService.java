@@ -1,5 +1,6 @@
 package com.adamskas.security.refresh_token;
 
+import com.adamskas.security.exceptions.TokenRefreshException;
 import com.adamskas.security.services.JwtService;
 import com.adamskas.security.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -37,7 +39,7 @@ public class RefreshTokenService {
     private long refreshTokenDurationMs;
 
     public HttpHeaders refreshTokens(String token) {
-        return refreshTokenRepository.findByToken(token)
+        return refreshTokenRepository.findByToken(hashToken(token))
                 .map(this::verifyExpiration)
                 .map(RefreshTokenEntity::getUsername)
                 .map(String::toLowerCase)
@@ -48,7 +50,6 @@ public class RefreshTokenService {
                     String refreshToken = generateRefreshToken(user);
 
                     return createCookieHeaders(accessToken, refreshToken);
-
                 })
                 .orElseThrow(TokenRefreshException::new);
     }
@@ -111,6 +112,7 @@ public class RefreshTokenService {
         return headers;
     }
 
+    @Transactional
     public void deleteRefreshTokenByUsername(String username){
         refreshTokenRepository.deleteByUsername(username);
     }
